@@ -10,6 +10,7 @@ import {
   call,
 } from "redux-saga/effects";
 import axios from "axios";
+import qs from "querystring";
 import {
   AUTH_LOGIN_REQUEST,
   AUTH_LOGIN_ERROR,
@@ -144,7 +145,13 @@ const createAuthSaga = (options: {
         client_secret: OAUTH_CLIENT_SECRET,
       };
 
-      const { data: token } = yield call(axios.post, OAUTH_URL, params);
+      const config = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+
+      const { data: token } = yield call(axios.post, OAUTH_URL, qs.stringify(params), config);
       yield put(authLogin(token));
 
       if (onSuccess) {
