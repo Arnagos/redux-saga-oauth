@@ -9,7 +9,7 @@ import type { AuthToken } from "./types";
 export type State = {
   loggedIn: bool,
   access_token: null|string,
-  created_at: null|number,
+  //created_at: null|number,
   expires_in: null|number,
   refresh_token: null|string,
   token_type: null|string,
@@ -23,7 +23,7 @@ type Action = {
 const initialState: State = {
   loggedIn: false,
   access_token: null,
-  created_at: null,
+  // created_at: null,
   expires_in: null,
   refresh_token: null,
   token_type: null,
@@ -41,7 +41,7 @@ const reducer = (state: State = initialState, action: Action): State => {
           token_type: action.payload.token_type,
           refresh_token: action.payload.refresh_token,
           expires_in: action.payload.expires_in,
-          created_at: action.payload.created_at,
+          // created_at: action.payload.created_at,
         };
       }
 

@@ -28,10 +28,10 @@ import type { State } from "./reducer";
 
 const tokenHasExpired = ({
   expires_in,
-  created_at,
+  // created_at,
 }: {
   expires_in: number,
-  created_at: number,
+  // created_at: number,
 }) => {
   const MILLISECONDS_IN_MINUTE = 1000 * 60;
 
@@ -41,7 +41,7 @@ const tokenHasExpired = ({
 
   // expiry time
   // multiplied by 1000 as server time are return in seconds, not milliseconds
-  const expires_at = new Date((created_at + expires_in) * 1000).getTime();
+  const expires_at = new Date(expires_in * 1000).getTime();
   // the current time
   const now = new Date().getTime();
   // when we want the token to be refreshed
@@ -69,13 +69,18 @@ const createAuthSaga = (options: {
 
   function* RefreshToken(refresh_token) {
     try {
+      const config = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
       const params = {
         refresh_token,
         client_id: OAUTH_CLIENT_ID,
         client_secret: OAUTH_CLIENT_SECRET,
         grant_type: "refresh_token",
       };
-      const { data: token } = yield call(axios.post, OAUTH_URL, params);
+      const { data: token } = yield call(axios.post, OAUTH_URL, qs.stringify(params), config);
       yield put(authRefreshSuccess(token));
       return true;
     } catch (error) {
@@ -97,13 +102,13 @@ const createAuthSaga = (options: {
     let retries = 0;
 
     while (true) {
-      const { expires_in, created_at, refresh_token } = yield select(getAuth);
+      const { expires_in, refresh_token } = yield select(getAuth);
 
       // if the token has expired, refresh it
       if (
         expires_in !== null &&
-        created_at !== null &&
-        tokenHasExpired({ expires_in, created_at })
+        // created_at !== null &&
+        tokenHasExpired({ expires_in })
       ) {
         const refreshed = yield call(RefreshToken, refresh_token);
 

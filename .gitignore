@@ -3,3 +3,4 @@ lib
 demo/bundle.js
 coverage
 **/*.log
+/.idea/*
