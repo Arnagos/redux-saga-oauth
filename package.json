@@ -1,6 +1,6 @@
 {
-  "name": "@simpleweb-keycloak/redux-saga-oauth",
-  "version": "2.0.4",
+  "name": "@d.mushkov/redux-saga-oauth",
+  "version": "2.0.5",
   "description": "An OAuth module for Redux Saga powered applications",
   "main": "lib/index.js",
   "repository": {
