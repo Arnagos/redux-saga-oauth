@@ -1,65 +1,37 @@
 // @flow
-import {
-  delay,
-  select,
-  race,
-  take,
-  fork,
-  put,
-  cancel,
-  call,
-} from "redux-saga/effects";
+import {call, cancel, delay, fork, put, race, select, take,} from "redux-saga/effects";
 import axios from "axios";
 import qs from "querystring";
 import {
-  AUTH_LOGIN_REQUEST,
-  AUTH_LOGIN_ERROR,
-  AUTH_LOGOUT_REQUEST,
   AUTH_INVALID_ERROR,
-  authRestore,
+  AUTH_LOGIN_ERROR,
+  AUTH_LOGIN_REQUEST,
+  AUTH_LOGOUT_REQUEST,
+  authInvalidError,
   authLogin,
   authLoginError,
   authLogout,
-  authRefreshSuccess,
   authRefreshError,
-  authInvalidError,
+  authRefreshSuccess,
+  authRestore,
 } from "./actions";
-import type { State } from "./reducer";
 
-const tokenHasExpired = ({
-  expires_in,
-  // created_at,
-}: {
-  expires_in: number,
-  // created_at: number,
-}) => {
-  const MILLISECONDS_IN_MINUTE = 1000 * 60;
-
-  // set refreshBuffer to 10 minutes
-  // so the token is refreshed before expiry
-  const refreshBuffer = MILLISECONDS_IN_MINUTE * 10;
-
-  // expiry time
-  // multiplied by 1000 as server time are return in seconds, not milliseconds
-  const expires_at = new Date(expires_in * 1000).getTime();
-  // the current time
-  const now = new Date().getTime();
-  // when we want the token to be refreshed
-  const refresh_at = expires_at - refreshBuffer;
-
-  return now >= refresh_at;
+const tokenHasExpired = ({expires_in}): { expires_in: number } => {
+  return 1000 * expires_in - (new Date()).getTime() < 5000
 };
 
 const createAuthSaga = (options: {
   loginActions?: Object,
   reducerKey: string,
   OAUTH_URL: string,
+  OAUTH_LOGOUT_URL: string,
   OAUTH_CLIENT_ID: string,
   OAUTH_CLIENT_SECRET: string,
 }) => {
   const {
     loginActions,
     OAUTH_URL,
+    OAUTH_LOGOUT_URL,
     OAUTH_CLIENT_ID,
     OAUTH_CLIENT_SECRET,
     reducerKey,
@@ -67,6 +39,9 @@ const createAuthSaga = (options: {
 
   const getAuth = state => state[reducerKey];
 
+  /**
+   * @return {boolean}
+   */
   function* RefreshToken(refresh_token) {
     try {
       const config = {
@@ -102,13 +77,13 @@ const createAuthSaga = (options: {
     let retries = 0;
 
     while (true) {
-      const { expires_in, refresh_token } = yield select(getAuth);
+      const {expires_in, created_at, refresh_token} = yield select(getAuth);
 
       // if the token has expired, refresh it
       if (
-        expires_in !== null &&
-        // created_at !== null &&
-        tokenHasExpired({ expires_in })
+          expires_in !== null &&
+          created_at !== null &&
+          tokenHasExpired({expires_in, created_at})
       ) {
         const refreshed = yield call(RefreshToken, refresh_token);
 
@@ -131,6 +106,7 @@ const createAuthSaga = (options: {
 
         if (retries === maxRetries) {
           // @TODO add hook
+          return;
         }
       }
 
@@ -154,9 +130,10 @@ const createAuthSaga = (options: {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }
+      };
 
       const { data: token } = yield call(axios.post, OAUTH_URL, qs.stringify(params), config);
+
       yield put(authLogin(token));
 
       if (onSuccess) {
@@ -179,8 +156,8 @@ const createAuthSaga = (options: {
 
   function* Authentication(): Generator<*, *, *> {
     while (true) {
-      const { loggedIn } = yield select(getAuth);
-      var authorizeTask = null;
+      const {loggedIn} = yield select(getAuth);
+      let authorizeTask = null;
 
       // if the users is logged in, we can skip over this bit
       if (!loggedIn) {
@@ -219,6 +196,30 @@ const createAuthSaga = (options: {
       }
 
       // finally log the user out
+      yield call(Logout);
+    }
+  }
+
+  function* Logout() {
+
+    const {refresh_token} = yield select(getAuth);
+
+    if (refresh_token) {
+
+      const config = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      };
+
+      const params = {
+        refresh_token,
+        client_id: OAUTH_CLIENT_ID,
+        client_secret: OAUTH_CLIENT_SECRET,
+      };
+
+      yield call(axios.post, OAUTH_LOGOUT_URL, qs.stringify(params), config);
+
       yield put(authLogout());
     }
   }
