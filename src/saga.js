@@ -16,7 +16,7 @@ import {
   authRestore,
 } from "./actions";
 
-const tokenHasExpired = ({expires_in}): { expires_in: number } => {
+const tokenHasExpired = (expires_in): boolean => {
   return 1000 * expires_in - (new Date()).getTime() < 5000
 };
 
@@ -77,13 +77,12 @@ const createAuthSaga = (options: {
     let retries = 0;
 
     while (true) {
-      const {expires_in, created_at, refresh_token} = yield select(getAuth);
+      const {expires_in, refresh_token} = yield select(getAuth);
 
       // if the token has expired, refresh it
       if (
           expires_in !== null &&
-          created_at !== null &&
-          tokenHasExpired({expires_in, created_at})
+          tokenHasExpired(expires_in)
       ) {
         const refreshed = yield call(RefreshToken, refresh_token);
 
