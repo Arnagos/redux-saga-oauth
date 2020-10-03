@@ -1,13 +1,13 @@
 {
-  "name": "@simpleweb-keycloak/redux-saga-oauth",
-  "version": "2.0.5",
-  "description": "An Keycloak OAuth module for Redux Saga powered applications",
+  "name": "@arnagos/redux-saga-oauth",
+  "version": "2.0.6",
+  "description": "A Keycloak OAuth module for Redux Saga powered applications",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/dmushkov/redux-saga-oauth.git"
+    "url": "git+ssh://git@github.com/arnagos/redux-saga-oauth.git"
   },
-  "author": "Dian Mushkov <un@simpleweb.co.uk2>",
+  "author": "Robin Henkel <mail.robin.henkel@gmail.com>",
   "license": "MIT",
   "files": [
     "lib"
@@ -43,9 +43,9 @@
     "redux-saga": "^0.15.3"
   },
   "bugs": {
-    "url": "https://github.com/dmushkov/redux-saga-oauth/issues"
+    "url": "https://github.com/arnagos/redux-saga-oauth/issues"
   },
-  "homepage": "https://github.com/dmushkov/redux-saga-oauth#readme",
+  "homepage": "https://github.com/arnagos/redux-saga-oauth#readme",
   "directories": {
     "lib": "lib"
   }
