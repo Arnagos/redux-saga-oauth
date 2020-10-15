@@ -1,21 +1,20 @@
 // @flow
 import type { AuthToken, AuthParams } from "./types";
 
-const prefix = "@simpleweb/redux-saga-oauth";
+export const AUTH_RESTORE = `AUTH_RESTORE`;
 
-export const AUTH_RESTORE = `${prefix}/AUTH_RESTORE`;
+export const AUTH_LOGIN = `AUTH_LOGIN`;
+export const AUTH_LOGIN_REQUEST = `AUTH_LOGIN_REQUEST`;
+export const AUTH_LOGIN_ERROR = `AUTH_LOGIN_ERROR`;
 
-export const AUTH_LOGIN = `${prefix}/AUTH_LOGIN`;
-export const AUTH_LOGIN_REQUEST = `${prefix}/AUTH_LOGIN_REQUEST`;
-export const AUTH_LOGIN_ERROR = `${prefix}/AUTH_LOGIN_ERROR`;
+export const AUTH_LOGOUT = `AUTH_LOGOUT`;
+export const AUTH_LOGOUT_REQUEST = `AUTH_LOGOUT_REQUEST`;
 
-export const AUTH_LOGOUT = `${prefix}/AUTH_LOGOUT`;
-export const AUTH_LOGOUT_REQUEST = `${prefix}/AUTH_LOGOUT_REQUEST`;
+export const AUTH_REFRESH = `AUTH_REFRESH`;
+export const AUTH_REFRESH_SUCCESS = `AUTH_REFRESH_SUCCESS`;
+export const AUTH_REFRESH_ERROR = `AUTH_REFRESH_ERROR`;
 
-export const AUTH_REFRESH_SUCCESS = `${prefix}/AUTH_REFRESH_SUCCESS`;
-export const AUTH_REFRESH_ERROR = `${prefix}/AUTH_REFRESH_ERROR`;
-
-export const AUTH_INVALID_ERROR = `${prefix}/AUTH_INVALID_ERROR`;
+export const AUTH_INVALID_ERROR = `AUTH_INVALID_ERROR`;
 
 export const authRestore = () => ({
   type: AUTH_RESTORE,
