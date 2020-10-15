@@ -165,7 +165,7 @@ const createAuthSaga = (options: {
         ...loginActions,
       });
 
-      const {loggedIn, refresh_token} = yield select(getAuth);
+      const {loggedIn, refresh_token, expires_in} = yield select(getAuth);
       let authorizeTask = null;
 
       // if the users is logged in, we can skip over this bit
@@ -177,15 +177,17 @@ const createAuthSaga = (options: {
           continue;
         }
       } else {
-        const refreshed = yield call(RefreshToken, refresh_token);
-        if (!refreshed) {
-          yield call(Logout);
-          continue;
-        } else {
-          // dispatch an action so we know the user is back into an
-          // authenticated state
-          yield put(authRestore());
+        if (tokenHasExpired(expires_in)) {
+          const refreshed = yield call(RefreshToken, refresh_token);
+          if (!refreshed) {
+            yield call(Logout);
+            continue;
+          }
         }
+
+        // dispatch an action so we know the user is back into an
+        // authenticated state
+        yield put(authRestore());
       }
 
       // wait for...
