@@ -1,11 +1,12 @@
 // @flow
+import { JwtPayload } from 'jwt-decode';
 import {
   AUTH_LOGIN,
   AUTH_LOGOUT,
   AUTH_REFRESH_SUCCESS,
 } from "./actions";
 import type {AuthToken, AuthTokenResponse} from "./types";
-import jwt from 'jsonwebtoken';
+import jwtDecode from 'jwt-decode';
 
 export type State = {
   loggedIn: boolean,
@@ -36,7 +37,7 @@ const reducer = (state: State = initialState, action: Action): State => {
     case AUTH_REFRESH_SUCCESS:
       if (action.payload) {
         let responseToken: AuthTokenResponse = action.payload;
-        let decodedAuthToken = jwt.decode(responseToken.access_token);
+        let decodedAuthToken = jwtDecode<JwtPayload>(responseToken.access_token);
         return {
           ...state,
           loggedIn: true,
