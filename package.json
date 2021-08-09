@@ -1,6 +1,6 @@
 {
   "name": "@arnagos/redux-saga-oauth",
-  "version": "2.0.17",
+  "version": "2.0.18",
   "description": "A Keycloak OAuth module for Redux Saga powered applications",
   "main": "lib/index.js",
   "repository": {
